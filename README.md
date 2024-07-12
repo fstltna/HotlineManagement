@@ -1,4 +1,4 @@
-# Hotline Management Console (1.0)
+# Hotline Management Console (1.1)
 Allows you to manage your Hotline server process with a text based UI
 
 ---
@@ -8,6 +8,9 @@ You will need to run cpan and install these modules:
 - cpan -i UI::Dialog
 - cpan -i Term::ReadKey
 - cpan -i Term::ANSIScreen
+- cpan -i Proc::ProcessTable;
+- cpan -i POSIX qw(strftime);
+- cpan -i Number::Bytes::Human qw(format_bytes parse_bytes);
 
 Run "hmc". If you need to change any settings after this, edit "~/.hmcrc" and make the desired changes. This can be done within hmc itself.
 

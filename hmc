@@ -5,12 +5,24 @@ use warnings;
 use UI::Dialog;
 use Term::ReadKey;
 use Term::ANSIScreen qw(cls);
+use Proc::ProcessTable;
+use POSIX qw(strftime);
+use Number::Bytes::Human qw(format_bytes parse_bytes);
 
+# Commands
 my $FileEditor = "/bin/nano";
 my $InitDName = "/home/hotlineuser/bin/hotline";
 my $HOTLINEDIR = "/home/hotlineuser/HotlineFiles";
 my $BackupCommand = "/home/hotlineuser/HotlineBackup/hotlinebackup.pl -snapshot";
 my $PagerCommand = "/usr/bin/less";
+my $UpdateCommand = "/usr/bin/git pull";
+my $HMCDir = "/home/hotlineuser/HotlineManagement";
+my $BackupToolDir = "/home/hotlineuser/HotlineBackup";
+my $StartupDir = "/home/hotlineuser/HotlineStartup";
+
+my $DEBUG_MODE = "off";
+
+# Data Files
 my $AgreementTXT = "$HOTLINEDIR/Agreement.txt";
 my $ConfigYaml = "$HOTLINEDIR/config.yaml";
 my $MessageBoardTXT = "$HOTLINEDIR/MessageBoard.txt";
@@ -21,13 +33,25 @@ my $MessageBoardTXT = "$HOTLINEDIR/MessageBoard.txt";
 
 my $MySettings = "$ENV{'HOME'}/.hmcmcrc";
 
-my $HMC_ver = "1.0";
+my $HMC_ver = "1.1";
 my $Record = "false";	# Are results saved?
 my $TempDir = "/tmp";
 my $RobotName = "";
 my $BotVersion = "";
 my $UserName = "";
 my $ServerStatus = "foo";
+
+sub PrintDebugCommand
+{
+        if ($DEBUG_MODE eq "off")
+        {
+                return;
+        }
+        my $PassedString = shift;
+        print "About to run:\n$PassedString\n";
+        print "Press Enter To Run This:";
+        my $entered = <STDIN>;
+}
 
 my $d = new UI::Dialog ( backtitle => "Hotline Management Console v$HMC_ver", height => 20, width => 65, listheight => 5,
 	order => [ 'ascii', 'cdialog', 'xdialog' ]);
@@ -106,7 +130,6 @@ else
 
 my $menuselection = "";
 
-
 sub CheckServerStatus
 {
 	my $running=`ps ax|grep mobius-hotline-server|grep -v grep`;
@@ -119,6 +142,60 @@ sub CheckServerStatus
 		$ServerStatus = "Stopped";
 	}
 
+}
+
+sub UpdateToolsMenu
+{
+        my $WantRespawn="ON";
+        CheckServerStatus();
+        if (-f "$HOTLINEDIR/nostart")
+        {
+                $WantRespawn="OFF";
+        }
+        $menuselection = $d->menu( title => "Update Tools Menu", text => "Server is $ServerStatus and respawn is $WantRespawn - Select one:",
+                            list => [ '1', 'Update HMC',
+                                      '2', 'Update Backup',
+                                      '3', 'Update Startup',
+                                      'q', 'Main Menu' ] );
+}
+
+sub DoUpdate
+{
+        my $DesiredDir = $_[0];
+
+        # Update desired utility
+        chdir ($DesiredDir);
+        PrintDebugCommand("Running $UpdateCommand in $DesiredDir\n");
+        system("$UpdateCommand");
+        print "Press Enter To Continue";
+        my $entered = <STDIN>;
+}
+
+sub UpdateTools
+{
+        while (-1)
+        {
+                UpdateToolsMenu();
+                if (($menuselection eq "CANCEL") || ($menuselection eq "ESC") || ($menuselection eq "") || ($menuselection eq "q") || ($menuselection eq "Q"))
+                {
+                        return;
+                }
+                elsif ($menuselection eq "1")
+                {
+                        # Update HMC
+                        DoUpdate($HMCDir);
+                }
+                elsif ($menuselection eq "2")
+                {
+                        # Update BackupToolDir
+                        DoUpdate($BackupToolDir);
+                }
+                elsif ($menuselection eq "3")
+                {
+                        # Update Startup
+                        DoUpdate($StartupDir);
+                }
+        }
 }
 
 sub MainMenu
@@ -142,6 +219,7 @@ sub MainMenu
                                       '9', 'Run Backup',
                                       '10', 'Edit Settings',
                                       '11', 'Restart Hotline',
+                                      '12', 'Update Tools',
                                       'q', 'Quit HMC' ] );
 }
 
@@ -219,6 +297,11 @@ while (-1)
 		system("killall mobius-hotline-server");
 		print "Process killed...";
 		sleep(5);
+	}
+	elsif ($menuselection eq "12")
+	{
+		# Update tools menu
+		UpdateTools();
 	}
 }
 
