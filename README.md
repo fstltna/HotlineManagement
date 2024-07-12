@@ -13,4 +13,4 @@ Run "hmc". If you need to change any settings after this, edit "~/.hmcrc" and ma
 
 You also need to have my Hotline Startup Script and Backup Script installed.
 
-I then suggest you add this directory (HotlineManagement) into your path, so that you can just run "git pull" to upgrade to the latest version aamc as updates come out.
+I then suggest you add this directory (HotlineManagement) into your path so you can just run "hmc" from the command line. You can run "git pull" to upgrade to the latest version hmc as updates come out.
