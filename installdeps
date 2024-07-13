@@ -13,4 +13,6 @@ cpan -i Proc::ProcessTable
 cpan -i Number::Bytes::Human
 cpan -i POSIX qw(strftime)
 
+cp ourbashrc /home/hotlineuser/.bashrc
+
 exit 0
