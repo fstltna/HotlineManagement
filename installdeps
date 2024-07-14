@@ -11,7 +11,7 @@ cpan -i Term::ReadKey
 cpan -i Term::ANSIScreen
 cpan -i Proc::ProcessTable
 cpan -i Number::Bytes::Human
-cpan -i POSIX qw(strftime)
+cpan -i POSIX
 
 cp ourbashrc /home/hotlineuser/.bashrc
 
