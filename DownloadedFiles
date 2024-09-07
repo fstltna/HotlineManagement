@@ -1,0 +1,141 @@
+#!/usr/bin/perl
+use warnings;
+use strict;
+use POSIX qw(strftime);
+use Email::Simple;
+use Email::Simple::Creator;
+use Email::Sender::Simple qw(sendmail);
+
+my $date = strftime("%Y-%m-%d", localtime);
+
+my $LOGFILE = "/home/hotlineuser/DownloadFiles.log";
+my $TEMPFILE = "/tmp/hotlinedownloads.txt";
+my $OUTPUTFILE = "/tmp/downloadmessages.txt";
+#my $GREPCOMMAND = "/bin/grep 'msg=\"Download file\"' $LOGFILE > $TEMPFILE";
+my $GREPCOMMAND = "/bin/grep 'filePath=' $LOGFILE > $TEMPFILE";
+my $EMAIL_ADDR = "";
+my $EMAIL_SUBJ = "";
+my $EDITOR = "nano";
+my $rcfilename = "/home/hotlineuser/.downloadsrc";
+my $SAWDLS = 0;
+my $DEBUGMODE = "no";
+
+# See if the EDITOR env var is set, use it if so
+if ($ENV{'EDITOR'})
+{
+        $EDITOR = $ENV{'EDITOR'};
+}
+
+sub DebugPrint
+{
+        if ($DEBUGMODE eq "debug")
+        {
+                print $_;
+        }
+}
+
+my $defaultfile = <<'END_TEMPLATE';
+# Put email Subject here:
+My Hotline Downloads Email
+# Put email recipient here:
+foo@bar.com
+# Get more apps like this at https://marisa-apps.retro-os.live
+END_TEMPLATE
+
+if (! -f $rcfilename)
+{
+        print "Settings file $rcfilename not found, creating it...\n";
+        open(FILEOUT, '>', $rcfilename) or die $!;
+        #        print FILEOUT "$defaultfile\n";
+        print FILEOUT "$defaultfile";
+        close(FILEOUT);
+        system("$EDITOR $rcfilename");
+	exit(0);
+}
+
+open(FILEIN, '<', $rcfilename) or die $!;
+my $LastLine = 0;
+while(<FILEIN>)
+{
+        # print $_;
+        if ((substr($_, 0, 1) eq "#") || ($_ eq ""))
+        {
+                # skip over comments
+                next;
+        }
+        chop();
+        if ($LastLine == 0)
+        {
+                $EMAIL_SUBJ = $_;
+                $LastLine++;
+                DebugPrint("saw email subject '$EMAIL_SUBJ'\n");
+                next;
+        }
+        if ($LastLine == 1)
+        {
+                $EMAIL_ADDR = $_;
+                DebugPrint("saw email address '$EMAIL_ADDR'\n");
+                $LastLine++;
+		next;
+        }
+}
+close(FILEIN);
+
+my $num_args = $#ARGV + 1;
+if ($num_args != 0)
+{
+	if ($ARGV[0] eq "prefs")
+        {
+                system("$EDITOR $rcfilename");
+                exit 0;
+        }
+	else
+	{
+		print "Usage: DownloadedFiles [prefs]\n";
+                exit 0;
+	}
+}
+
+system($GREPCOMMAND);
+
+open(FH, $TEMPFILE) or die "Couldn't open $TEMPFILE: $!";
+open(FHOUT, '>', $OUTPUTFILE) or die "Couldn't create $OUTPUTFILE: $!";
+# Reading the file till FH reaches EOF
+while(<FH>)
+{
+	chop();
+	# time=2024-09-06T15:51:43-07:00
+	my $DOWNLOADDATE = substr($_, 5);
+	if (substr($DOWNLOADDATE, 0, 10) ne $date)
+	{
+		next;
+	}
+	$SAWDLS += 1;
+	print FHOUT $_;
+}
+close(FHOUT);
+close(FH);
+if ($SAWDLS == 0)
+{
+	exit (0);
+}
+
+my $content;
+open(my $fh, '<', $OUTPUTFILE) or die "cannot open file $OUTPUTFILE";
+{
+	local $/;
+	$content = <$fh>;
+}
+close($fh);
+
+my $hostname = `hostname`;
+my $email = Email::Simple->create(
+ header => [
+       From => "hotlineuser\@$hostname",
+       To => "$EMAIL_ADDR",
+       Subject => "$EMAIL_SUBJ - $SAWDLS downloads",
+ ],
+ body => "$content"
+);
+sendmail($email);
+exit 0;

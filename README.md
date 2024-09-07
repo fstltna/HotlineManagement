@@ -11,3 +11,11 @@ Run "hmc". If you need to change any settings after this, edit "~/.hmcrc" and ma
 
 You also need to have my Hotline Startup Script and Backup Script installed.
 
+To send out daily emails of the downloads add this to crontab:
+
+1. create a cron job like this:
+
+        59 23 * * * /home/hotlineuser/HotlineManagement/DownloadedFiles
+
+2. Create the prefs by running /home/hotlineuser/HotlineManagement/DownloadedFiles prefs
+
