@@ -12,6 +12,8 @@ cpan -i Term::ANSIScreen
 cpan -i Proc::ProcessTable
 cpan -i Number::Bytes::Human
 cpan -i POSIX
+cpan -i Email::Simple
+cpan -i Email::Sender::Simple
 
 cp ourbashrc /home/hotlineuser/.bashrc
 
