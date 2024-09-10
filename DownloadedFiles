@@ -111,7 +111,7 @@ while(<FH>)
 		next;
 	}
 	$SAWDLS += 1;
-	print FHOUT $_;
+	print FHOUT "$_\n";
 }
 close(FHOUT);
 close(FH);
