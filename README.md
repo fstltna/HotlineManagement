@@ -19,3 +19,11 @@ To send out daily emails of the downloads add this to crontab:
 
 2. Create the prefs by running /home/hotlineuser/HotlineManagement/DownloadedFiles prefs
 
+3. Add these lines to the tracker list:
+>>>>
+  - badmoon.biz:5499
+  - hotline.duckdns.org:5499
+  - hotline.jpn.ph:5499
+  - tracked.nailbat.com:5499
+  - tracked.stickytack.com:5499
+<<<<
