@@ -33,7 +33,7 @@ my $MessageBoardTXT = "$HOTLINEDIR/MessageBoard.txt";
 
 my $MySettings = "$ENV{'HOME'}/.hmcmcrc";
 
-my $HMC_ver = "1.1";
+my $HMC_ver = "1.2";
 my $Record = "false";	# Are results saved?
 my $TempDir = "/tmp";
 my $RobotName = "";
@@ -214,7 +214,7 @@ sub MainMenu
                                       '4', 'Turn Off Respawn',
                                       '5', 'Turn Respawn On',
                                       '6', 'Edit config.yaml',
-                                      '7', 'Edit Announce.txt',
+                                      '7', 'Edit Agreement.txt',
                                       '8', 'Edit MessageBoard',
                                       '9', 'Run Backup',
                                       '10', 'Edit Settings',

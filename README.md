@@ -1,4 +1,4 @@
-# Hotline Management Console (1.1.1)
+# Hotline Management Console (1.2.0)
 Allows you to manage your Hotline server process with a text based UI
 
 ---
