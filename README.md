@@ -27,3 +27,9 @@ To send out daily emails of the downloads add this to crontab:
   - tracked.nailbat.com:5499
   - tracked.stickytack.com:5499
 <<<<
+And add these to the IgnoreFiles section:
+>>>>
+  - '^_'       # Ignore all files starting with "_"
+  - '^index\.html'       # Ignore index.html files
+>>>>
+
