@@ -32,4 +32,5 @@ And add these to the IgnoreFiles section:
   - '^_'       # Ignore all files starting with "_"
   - '^index\.html'       # Ignore index.html files
 >>>>
+4. Set the "EnableTrackerRegistration" variable to "true"
 
