@@ -19,6 +19,10 @@ my $EDITOR = "nano";
 my $rcfilename = "/home/hotlineuser/.downloadsrc";
 my $SAWDLS = 0;
 my $DEBUGMODE = "no";
+my $CURVERSION = "1.1";
+
+print "DownloadedFiles - v$CURVERSION\n";
+print "==========================\n";
 
 # See if the EDITOR env var is set, use it if so
 if ($ENV{'EDITOR'})
@@ -117,6 +121,7 @@ close(FHOUT);
 close(FH);
 if ($SAWDLS == 0)
 {
+	print "No files found.\n";
 	exit (0);
 }
 
@@ -138,4 +143,7 @@ my $email = Email::Simple->create(
  body => "$content"
 );
 sendmail($email);
+unlink($TEMPFILE);
+unlink($OUTPUTFILE);
+print "All done!\n";
 exit 0;
