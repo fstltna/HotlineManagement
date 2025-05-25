@@ -17,6 +17,7 @@ my $BackupCommand = "/home/hotlineuser/HotlineBackup/hotlinebackup.pl -snapshot"
 my $PagerCommand = "/usr/bin/less";
 my $UpdateCommand = "/usr/bin/git pull";
 my $HMCDir = "/home/hotlineuser/HotlineManagement";
+my $DownloadEmail = "$HMCDir/DownloadedFiles";
 my $BackupToolDir = "/home/hotlineuser/HotlineBackup";
 my $StartupDir = "/home/hotlineuser/HotlineStartup";
 
@@ -33,7 +34,7 @@ my $MessageBoardTXT = "$HOTLINEDIR/MessageBoard.txt";
 
 my $MySettings = "$ENV{'HOME'}/.hmcmcrc";
 
-my $HMC_ver = "1.1";
+my $HMC_ver = "1.3";
 my $Record = "false";	# Are results saved?
 my $TempDir = "/tmp";
 my $RobotName = "";
@@ -214,12 +215,13 @@ sub MainMenu
                                       '4', 'Turn Off Respawn',
                                       '5', 'Turn Respawn On',
                                       '6', 'Edit config.yaml',
-                                      '7', 'Edit Announce.txt',
+                                      '7', 'Edit Agreement.txt',
                                       '8', 'Edit MessageBoard',
                                       '9', 'Run Backup',
-                                      '10', 'Edit Settings',
-                                      '11', 'Restart Hotline',
-                                      '12', 'Update Tools',
+                                      '10', 'Run eMail Notice',
+                                      '11', 'Edit Settings',
+                                      '12', 'Restart Hotline',
+                                      '13', 'Update Tools',
                                       'q', 'Quit HMC' ] );
 }
 
@@ -288,9 +290,17 @@ while (-1)
 	elsif ($menuselection eq "10")
 	{
 		# Edit settings file
-		system("$FileEditor $MySettings");
+		system("clear");
+		system("$DownloadEmail");
+		print "Press Enter To Continue";
+		my $entered = <STDIN>;
 	}
 	elsif ($menuselection eq "11")
+	{
+		# Run the download settings email
+		system("$FileEditor $MySettings");
+	}
+	elsif ($menuselection eq "12")
 	{
 		# Reset server process
 		print "Killing Hotline Server Process\n";
@@ -298,7 +308,7 @@ while (-1)
 		print "Process killed...";
 		sleep(5);
 	}
-	elsif ($menuselection eq "12")
+	elsif ($menuselection eq "13")
 	{
 		# Update tools menu
 		UpdateTools();

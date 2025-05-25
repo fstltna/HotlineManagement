@@ -1,4 +1,4 @@
-# Hotline Management Console (1.1.1)
+# Hotline Management Console (1.2.0)
 Allows you to manage your Hotline server process with a text based UI
 
 ---
@@ -18,4 +18,19 @@ To send out daily emails of the downloads add this to crontab:
         59 23 * * * /home/hotlineuser/HotlineManagement/DownloadedFiles
 
 2. Create the prefs by running /home/hotlineuser/HotlineManagement/DownloadedFiles prefs
+
+3. Add these lines to the tracker list:
+>>>>
+  - badmoon.biz:5499
+  - hotline.duckdns.org:5499
+  - hotline.jpn.ph:5499
+  - tracked.nailbat.com:5499
+  - tracked.stickytack.com:5499
+<<<<
+And add these to the IgnoreFiles section:
+>>>>
+  - '^_'       # Ignore all files starting with "_"
+  - '^index\.html'       # Ignore index.html files
+>>>>
+4. Set the "EnableTrackerRegistration" variable to "true"
 
