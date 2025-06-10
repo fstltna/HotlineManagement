@@ -1,0 +1,65 @@
+#!/usr/bin/perl
+use warnings;
+use strict;
+
+my $VERSIONURL = "https://hotline.retro-os.live/mobiusversion.txt";
+my $VERSION = "1.0.0";
+my $GETCMD = "/usr/bin/wget";
+my $LOCALMOBIUS = "/home/hotlineuser/mobius/mobius-hotline-server";
+my $SOURCEVERSION = "";
+my $LOCALVERSION = "";
+my $DEBUG = "";
+
+sub debugprint
+{
+	if ($DEBUG ne "")
+	{
+		print "$_[0]\n";
+	}
+}
+
+chdir ("/tmp");
+system ("$GETCMD $VERSIONURL >/dev/null 2>&1");
+system ("$LOCALMOBIUS --version > /tmp/localmobiusversion.txt");
+
+open(FH, '<', "mobiusversion.txt") or die $!;
+while(<FH>){
+	chop;
+	$SOURCEVERSION = $_;
+}
+close(FH);
+open(FH, '<', "localmobiusversion.txt") or die $!;
+while(<FH>){
+	chop;
+	$LOCALVERSION = $_;
+}
+close(FH);
+debugprint("Source version = $SOURCEVERSION");
+#print ("$1 \n") if($LOCALVERSION =~ /(\d\d:\d\d:\d\d)/);
+my @splitData = split(/ /, $LOCALVERSION);
+my $tempver = $splitData[2];
+chop ($tempver);
+debugprint("Local version = $tempver");
+
+# Remove temp files if they exist
+if (-f "/tmp/mobiusversion.txt")
+{
+	unlink("/tmp/mobiusversion.txt");
+}
+if (-f "/tmp/localmobiusversion.txt")
+{
+	unlink("/tmp/localmobiusversion.txt");
+}
+
+if ($tempver eq $SOURCEVERSION)
+{
+	# Already at the latest version
+	debugprint "Up to date";
+	exit 0;
+}
+print "CheckMobiusVersion v$VERSION\n";
+print "===========================\n";
+print "Source version = $SOURCEVERSION\n";
+print "Local version = $tempver\n";
+
+exit 0;
