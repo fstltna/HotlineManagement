@@ -3,8 +3,8 @@ use warnings;
 use strict;
 
 my $VERSIONURL = "https://hotline.retro-os.live/mobiusversion.txt";
-my $VERSION = "1.1.0";
-my $GETCMD = "/usr/bin/wget";
+my $VERSION = "1.2.0";
+my $GETCMD = "/usr/bin/wget --no-check-certificate";
 my $LOCALMOBIUS = "/home/hotlineuser/mobius/mobius-hotline-server";
 my $SOURCEVERSION = "";
 my $LOCALVERSION = "";
