@@ -1,0 +1,111 @@
+#!/usr/bin/perl
+use warnings;
+use strict;
+
+my $VERSIONURL = "https://hotline.retro-os.live/mobiusversion.txt";
+my $VERSION = "1.0.0";
+my $ACTIVEMOBIUS = "/home/hotlineuser/mobius/mobius-hotline-server";
+my $UPDATEMOBIUS = "/home/hotlineuser/mobius/mobius-hotline-server-update";
+my $SOURCEVERSION = "";
+my $SendNoticeAddr = "";
+my $SendFromAddr = "";
+my $Subject = "Mobius Updated";
+my $PrefsFile = "/home/hotlineuser/.mobupdprefs";
+my $EDITCMD = "nano";
+my $DEBUG = "";
+
+sub debugprint
+{
+	if ($DEBUG ne "")
+	{
+		print "$_[0]\n";
+	}
+}
+
+if (! -f $PrefsFile)
+{
+	# Prefs file not found, create it
+	print "Prefs not found, creating it\n";
+	my $BlankPrefs = <<"END_PREFS";
+# Recipient
+someuser\@somehost.com
+# Sender
+somesender\@somehost.com
+# Subject
+Mobius Updated
+END_PREFS
+	open(FH, '>', $PrefsFile) or die $!;
+	print FH "$BlankPrefs\n";
+	close(FH);
+	system ("$EDITCMD $PrefsFile");
+	exit 0;
+}
+
+my ($arg1) = @ARGV;
+if (defined($arg1))
+{
+	if ($arg1 eq "prefs")
+	{
+		system ("$EDITCMD $PrefsFile");
+		exit 0;
+	}
+}
+
+my $SawLine = 0;
+open(FH, '<', "$PrefsFile") or die $!;
+while(<FH>){
+        chop;
+	if (substr($_, 0, 1) eq "#")
+	{
+		debugprint("Skipping comment");
+		next;
+	}
+	if ($SawLine == 0)
+	{
+		$SendNoticeAddr =  $_;
+	}
+	elsif ($SawLine == 1)
+	{
+		$SendFromAddr =  $_;
+	}
+	elsif ($SawLine == 2)
+	{
+		$Subject =  $_;
+	}
+	$SawLine ++;
+}
+close(FH);
+
+print "CheckUpdate v$VERSION\n";
+print "===========================\n";
+
+if (! -f $UPDATEMOBIUS)
+{
+	# Already at the latest version
+	print "Up to date";
+	exit 0;
+}
+
+print "Updating mobius:\n";
+
+system("killall mobius-hotline-server");
+system("mv $UPDATEMOBIUS $ACTIVEMOBIUS");
+
+open(MAIL, "|/usr/sbin/sendmail -t");
+print MAIL "To: $SendNoticeAddr\n";
+print MAIL "From: $SendFromAddr\n";
+print MAIL "Subject: $Subject\n\n";
+
+print MAIL "CheckUpdate v$VERSION\n";
+print MAIL "===========================\n";
+print MAIL "mobius updated\n";
+my $result = close(MAIL);
+if($result)
+{
+    debugprint "Email Sent\n";
+}
+else
+{
+    debugprint "Error sending email\n";
+}
+exit 0;
