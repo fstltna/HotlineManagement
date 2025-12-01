@@ -1,0 +1,73 @@
+#!/usr/bin/perl
+use warnings;
+use strict;
+use Digest::MD5;
+
+my $VERSION = "1.0.0";
+my $LOCALMOBIUS = "/home/hotlineuser/mobius/mobius-hotline-server";
+my $PrefsFile = "/home/hotlineuser/.cursrver";
+my $DEBUG = "";
+
+sub KillServer
+{
+	system("killall mobius-hotline-server");
+}
+
+sub debugprint
+{
+	if ($DEBUG ne "")
+	{
+		print "$_[0]\n";
+	}
+}
+
+sub CreateTimeStamp
+{
+	open my $fh, '<', $LOCALMOBIUS or die "Cannot open file '$LOCALMOBIUS': $!";
+	binmode $fh; # Essential for binary files to prevent issues with line endings
+	my $ctx = Digest::MD5->new;
+	$ctx->addfile($fh);
+	my $md5_hash = $ctx->hexdigest;
+	close $fh;
+
+	open(FH, '>', $PrefsFile) or die $!;
+        print FH "$md5_hash\n";
+        close(FH);
+}
+
+print "CheckUpdate v$VERSION\n";
+print "===========================\n";
+if (! -f $PrefsFile)
+{
+	# no file
+	debugprint("no timestamp file");
+	system("touch $PrefsFile");
+	CreateTimeStamp();
+	exit 0;
+}
+
+open my $fh, '<', $LOCALMOBIUS or die "Cannot open file '$LOCALMOBIUS': $!";
+binmode $fh; # Essential for binary files to prevent issues with line endings
+my $ctx = Digest::MD5->new;
+$ctx->addfile($fh);
+my $md5_hash_active = $ctx->hexdigest;
+close $fh;
+
+open($fh, '<', $PrefsFile) or die $!;
+my $md5_hash = <$fh>;
+chop($md5_hash);
+close($fh);
+
+if ($md5_hash ne $md5_hash_active)
+{
+	debugprint("md5 differs");
+	debugprint("active = $md5_hash_active");
+	debugprint("  seen = $md5_hash");
+	CreateTimeStamp();
+	KillServer();
+}
+else
+{
+	debugprint("version current");
+}
+exit 0;
