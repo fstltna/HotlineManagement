@@ -3,8 +3,9 @@ use warnings;
 use strict;
 use Digest::MD5;
 
-my $VERSION = "1.0.0";
+my $VERSION = "1.1.0";
 my $LOCALMOBIUS = "/home/hotlineuser/mobius/mobius-hotline-server";
+my $MOBIUSUPDATE = "/home/hotlineuser/mobius/mobius-hotline-server-update";
 my $PrefsFile = "/home/hotlineuser/.cursrver";
 my $DEBUG = "";
 

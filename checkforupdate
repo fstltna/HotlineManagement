@@ -1,0 +1,48 @@
+#!/usr/bin/perl
+use warnings;
+use strict;
+use Digest::MD5;
+
+my $VERSION = "1.1.0";
+my $LOCALMOBIUS = "/home/hotlineuser/mobius/mobius-hotline-server";
+my $MOBIUSUPDATE = "/home/hotlineuser/mobius/mobius-hotline-server-update";
+my $DEBUG = "";
+
+sub KillServer
+{
+	system("killall mobius-hotline-server");
+}
+
+sub debugprint
+{
+	if ($DEBUG ne "")
+	{
+		print "$_[0]\n";
+	}
+}
+
+print "CheckForUpdate v$VERSION\n";
+print "===========================\n";
+
+if (! -f $MOBIUSUPDATE)
+{
+	debugprint("No Update Found");
+	exit 0;
+}
+
+print "Checking compatibility\n";
+system("$MOBIUSUPDATE --version");
+print "Did it work correctly? [N/y]: ";
+my $userinput = <>;
+chop($userinput);
+if ($userinput eq "y")
+{
+	system("mv $MOBIUSUPDATE $LOCALMOBIUS");
+	KillServer();
+	print "Server updated\n";
+}
+else
+{
+	print "No changes made\n";
+}
+exit 0;
