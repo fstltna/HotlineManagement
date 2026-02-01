@@ -16,14 +16,11 @@ To send out daily emails of the downloads add this to crontab:
 1. create a cron job like this:
 
         59 23 * * * /home/hotlineuser/HotlineManagement/DownloadedFiles
-        1 1 * * * /home/hotlineuser/HotlineManagement/checkmobiusversion
 
 
 2. Create the prefs by running /home/hotlineuser/HotlineManagement/DownloadedFiles prefs
 
-3. Create the update prefs by running /home/hotlineuser/HotlineManagement/checkmobiusversion
-
-4. Add these lines to the tracker list:
+3. Add these lines to the tracker list:
 >>>>
   - badmoon.biz:5499
   - hotline.duckdns.org:5499
