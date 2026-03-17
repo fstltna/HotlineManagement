@@ -34,13 +34,14 @@ my $MessageBoardTXT = "$HOTLINEDIR/MessageBoard.txt";
 
 my $MySettings = "$ENV{'HOME'}/.hmcmcrc";
 
-my $HMC_ver = "1.3";
+my $HMC_ver = "1.4";
 my $Record = "false";	# Are results saved?
 my $TempDir = "/tmp";
 my $RobotName = "";
 my $BotVersion = "";
 my $UserName = "";
 my $ServerStatus = "foo";
+my $ShellCommand = "/usr/bin/bash";
 
 sub PrintDebugCommand
 {
@@ -199,6 +200,77 @@ sub UpdateTools
         }
 }
 
+sub ShellToolsMenu
+{
+        my $WantRespawn="ON";
+        CheckServerStatus();
+        if (-f "$HOTLINEDIR/nostart")
+        {
+                $WantRespawn="OFF";
+        }
+
+        $menuselection = $d->menu( title => "Shell Tools Menu", text => "Server is $ServerStatus and respawn is $WantRespawn - Select one:",
+                            list => [ '1', 'Who is Online',
+                                      '2', 'Last Logins',
+                                      '3', 'Disk Free',
+                                      '4', 'Current Proc',
+                                      '5', 'Spawn Shell',
+                                      'q', 'Main Menu' ] );
+}
+
+sub ShellTools
+{
+        while (-1)
+        {
+                ShellToolsMenu();
+                if (($menuselection eq "CANCEL") || ($menuselection eq "ESC") || ($menuselection eq "") || ($menuselection eq "q") || ($menuselection eq "Q"))
+                {
+                        return;
+                }
+                elsif ($menuselection eq "1")
+                {
+                        # Who is online
+                        system("clear");
+                        system("w");
+                        print "Press Enter To Continue:";
+                        my $entered = <STDIN>;
+                }
+                elsif ($menuselection eq "2")
+                {
+                        # Last logins
+                        system("clear");
+                        system("last | $PagerCommand");
+                }
+		elsif ($menuselection eq "3")
+                {
+                        # Disk free space
+                        system("clear");
+                        system("df -h");
+                        print "Press Enter To Continue:";
+                        my $entered = <STDIN>;
+                }
+                elsif ($menuselection eq "4")
+                {
+                        # Running processes
+                        system("clear");
+                        print "Press \"q\" To Exit. Press Enter To Continue:";
+                        my $entered = <STDIN>;
+                        system("top");
+                }
+                elsif ($menuselection eq "5")
+                {
+                        # Go to shell
+                        system("clear");
+                        print "About to spawn a shell. Enter \"exit\" to exit and return to HMC\n";
+                        print "Press Enter To Continue:";
+                        my $entered = <STDIN>;
+                        system("clear");
+                        chdir("$ENV{HOME}");
+                        system("$ShellCommand");
+                }
+        }
+}
+
 sub MainMenu
 {
 	my $WantRespawn="ON";
@@ -222,6 +294,7 @@ sub MainMenu
                                       '11', 'Edit Settings',
                                       '12', 'Restart Hotline',
                                       '13', 'Update Tools',
+                                      '14', 'Shell Tools',
                                       'q', 'Quit HMC' ] );
 }
 
@@ -312,6 +385,11 @@ while (-1)
 	{
 		# Update tools menu
 		UpdateTools();
+	}
+	elsif ($menuselection eq "14")
+	{
+		# Shell tools menu
+		ShellTools();
 	}
 }
 
